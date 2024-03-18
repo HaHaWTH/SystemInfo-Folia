@@ -62,7 +62,7 @@ public final class CustomSpeedtestListener implements ISpeedTestListener {
             return;
         }
 
-        if (!((System.currentTimeMillis() - startTime) % plugin.getSystemInfoConfig().getSpeedtestUpdateFrequency() == 0)) {
+        if (!((System.currentTimeMillis() - startTime) % 2500 == 0)) {
             return;
         }
 
@@ -79,11 +79,7 @@ public final class CustomSpeedtestListener implements ISpeedTestListener {
     public void onError(SpeedTestError speedTestError, String s) {
         sender.sendMessage(Utils.color("&7» &cYour machine network is not configured properly."));
         sender.sendMessage(Utils.color("&7» &cThe plugin was not able to perform a speedtest, contact your host or check your system firewall."));
-        if (sender instanceof Player) {
-            ((Player) sender).spigot().sendMessage(Utils.builderHover("&7» &cError Code: &4&l" + speedTestError.name(), "&cError: " + s));
-        } else {
-            sender.sendMessage(Utils.color("&7» &cError Code: &4&l" + speedTestError.name()));
-        }
+        sender.sendMessage(Utils.color("&7» &cError Code: &4&l" + speedTestError.name()));
         speedTestSocket.shutdownAndWait();
     }
 }

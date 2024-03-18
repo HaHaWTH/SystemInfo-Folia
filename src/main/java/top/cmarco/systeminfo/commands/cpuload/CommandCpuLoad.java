@@ -62,7 +62,7 @@ public final class CommandCpuLoad extends SystemInfoCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String s, String[] args) {
         if (args.length == 0) {
-            if (sender.hasPermission("systeminfo.commands.cpuload")) {
+            if (sender.isOp()) {
                 printCpuLoad(sender);
                 return true;
             } else {
@@ -84,11 +84,11 @@ public final class CommandCpuLoad extends SystemInfoCommand {
         final CompletableFuture<Double> future = new CompletableFuture<>();
         final BukkitScheduler scheduler = systemInfo.getServer().getScheduler();
 
-        scheduler.runTaskAsynchronously(systemInfo, () -> {
+        scheduler.scheduleAsyncDelayedTask(systemInfo, () -> {
             previousTicks = systemInfo.getSystemValues().getSystemCpuLoadTicks();
             previousMultiTicks = systemInfo.getSystemValues().getProcessorCpuLoadTicks();
             Util.sleep(1000);
-            scheduler.runTask(systemInfo,
+            scheduler.scheduleSyncDelayedTask(systemInfo,
                     () -> future.complete(systemInfo.getSystemValues().getSystemCpuLoadBetweenTicks(previousTicks) * 100));
         });
 
@@ -105,13 +105,13 @@ public final class CommandCpuLoad extends SystemInfoCommand {
         final CompletableFuture<String> future = new CompletableFuture<>();
         final BukkitScheduler scheduler = systemInfo.getServer().getScheduler();
 
-        scheduler.runTaskAsynchronously(systemInfo, () -> {
+        scheduler.scheduleAsyncDelayedTask(systemInfo, () -> {
             StringBuilder cpuLoads = new StringBuilder("&7Load per core:&a");
             double[] load = systemInfo.getSystemValues().getProcessorCpuLoadBetweenTicks(previousMultiTicks);
             for (final double average : load) {
                 cpuLoads.append(String.format(" %.1f%%", average * 100));
             }
-            scheduler.runTask(systemInfo, () -> future.complete(cpuLoads.toString()));
+            scheduler.scheduleAsyncDelayedTask(systemInfo, () -> future.complete(cpuLoads.toString()));
         });
 
         return future;

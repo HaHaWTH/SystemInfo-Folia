@@ -57,7 +57,7 @@ public final class CommandHtop extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender sender, @NotNull String name, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.htop")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 printHtop(sender);
                 return true;

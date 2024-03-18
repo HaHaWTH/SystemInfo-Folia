@@ -56,7 +56,7 @@ public final class CommandSensors extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender sender, String s, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.sensors")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 sender.sendMessage(Utils.color("&7Fans RPM: &a" + systemInfo.getSystemValues().getFansRPM()));
                 sender.sendMessage(Utils.color("&7Cpu Voltage: &a" + systemInfo.getSystemValues().getCpuVoltage()));

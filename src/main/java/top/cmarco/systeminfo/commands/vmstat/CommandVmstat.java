@@ -57,7 +57,7 @@ public final class CommandVmstat extends SystemInfoCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String name, String[] args) {
         if (args.length == 0) {
-            if (sender.hasPermission("systeminfo.commands.vmstat")) {
+            if (sender.isOp()) {
                 vmstat(sender);
                 return true;
             } else {

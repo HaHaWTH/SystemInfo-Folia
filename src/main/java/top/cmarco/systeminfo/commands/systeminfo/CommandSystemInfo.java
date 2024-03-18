@@ -25,7 +25,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import org.bukkit.ChatColor;
+
 import org.jetbrains.annotations.NotNull;
 import top.cmarco.systeminfo.commands.SystemInfoCommand;
 import top.cmarco.systeminfo.plugin.SystemInfo;
@@ -33,10 +33,9 @@ import top.cmarco.systeminfo.enums.Messages;
 import top.cmarco.systeminfo.utils.Utils;
 import static org.bukkit.World.Environment.NETHER;
 import static org.bukkit.World.Environment.NORMAL;
-import static org.bukkit.World.Environment.THE_END;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+
 
 /**
  * The `CommandSystemInfo` class is a Spigot command that provides various system-related information and commands
@@ -66,7 +65,7 @@ public final class CommandSystemInfo extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender sender, @NotNull String name, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.help")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 systemInfo1(sender);
                 return true;
@@ -84,13 +83,6 @@ public final class CommandSystemInfo extends SystemInfoCommand {
                     case "reload":
                         reload(sender);
                         break;
-                    case "gui":
-                        if (sender instanceof Player) {
-                            systemInfo.getSystemInfoGui().createGui((Player) sender);
-                        } else {
-                            sender.sendMessage(Utils.color("&4» &cYou cannot create GUIs inside a console"));
-                        }
-                        break;
                     default:
                         sender.sendMessage(Messages.INVALID_ARGS.value(true));
                         break;
@@ -106,18 +98,6 @@ public final class CommandSystemInfo extends SystemInfoCommand {
      * @param sender The command sender.
      */
     private static void systemInfo1(CommandSender sender) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            sender.sendMessage(Utils.color("&7&m&l--------------------------------------"));
-            player.spigot().sendMessage(Utils.builderHover("&7»» &fSystemInfo Help &7««", "This is the help page."));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/lscpu &aget processor info! &8[&7*&8]", "this returns processor info"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/gpu &aget gpu info! &8[&7*&8]", "prints all necessary GPU info."));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/vmstat &aget memory info! &8[&7*&8]", "this gets memory usage\nof the entire host"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/sensors &aget sensors info! &8[&7*&8]", "gets various info from sensors"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/disks &aget disks info! &8[&7*&8]", "prints out a map of disks."));
-            player.spigot().sendMessage(Utils.builderClick("&7»» Click here for the second page &8[&7*&8]", "/systeminfo 2"));
-            player.sendMessage(Utils.color("&7&m&l--------------------------------------"));
-        } else {
             sender.sendMessage(Utils.color("&7&m&l--------------------------------------"));
             sender.sendMessage(Utils.color("&7»» &fSystemInfo Help &7««"));
             sender.sendMessage(Utils.color("&f- &7/lscpu &aget processor info!"));
@@ -126,7 +106,7 @@ public final class CommandSystemInfo extends SystemInfoCommand {
             sender.sendMessage(Utils.color("&f- &7/sensors &aget sensors info!"));
             sender.sendMessage(Utils.color("&f- &7/disks &aget disks info!"));
             sender.sendMessage(Utils.color("&7&m&l--------------------------------------"));
-        }
+
     }
 
     /**
@@ -135,18 +115,7 @@ public final class CommandSystemInfo extends SystemInfoCommand {
      * @param sender The command sender.
      */
     private static void systemInfo2(@NotNull CommandSender sender) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            sender.sendMessage(Utils.color("&7&l&m--------------------------------------"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/htop &aget processes list! &8[&7*&8]", "get a list of processes"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/systeminfo [reload&f|&7version&f|&7stats&f|&7gui] &8[&7*&8]", "available args = stats, version, gui"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/uptime &aget the machine uptime! &8[&7*&8]", "get the total uptime of the machine"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/devices &aget devices list! &8[&7*&8]", "get every attached device"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/cpuload &aget the CPU load! &8[&7*&8]", "Get CPU current percentage load"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/speedtest &aBenchmark your network! &8[&7*&8]", "Get your download\\upload speeds"));
-            player.spigot().sendMessage(Utils.builderHover("&f- &7/java &aGet information about Java! &8[&7*&8]", "Show Version, Brand, Args and PID of JVM."));
-            sender.sendMessage(Utils.color("&7&l&m--------------------------------------"));
-        } else {
+
             sender.sendMessage(Utils.color("&7&l&m--------------------------------------"));
             sender.sendMessage(Utils.color("&f- &7/htop &aget processes list!"));
             sender.sendMessage(Utils.color("&f- &7/systeminfo [reload&f|&7version&f|&7stats&f|&7gui]"));
@@ -156,7 +125,7 @@ public final class CommandSystemInfo extends SystemInfoCommand {
             sender.sendMessage(Utils.color("&f- &7/speedtest &aBenchmark your network!"));
             sender.sendMessage(Utils.color("&f- &7/java &aGet information about Java!"));
             sender.sendMessage(Utils.color("&7&l&m--------------------------------------"));
-        }
+
     }
 
     /**
@@ -187,8 +156,7 @@ public final class CommandSystemInfo extends SystemInfoCommand {
         sender.sendMessage(Utils.color("&2» &7Server stats &2«"));
         sender.sendMessage(Utils.color("&2» &7Overworld Entities: &a" + Utils.countEntitiesInWorlds(NORMAL) + " &7Loaded Chunks: &a" + Utils.loadedChunksInWorlds(NORMAL)));
         sender.sendMessage(Utils.color("&2» &7Nether Entities: &a" + Utils.countEntitiesInWorlds(NETHER) + " &7Loaded Chunks: &a" + Utils.loadedChunksInWorlds(NETHER)));
-        sender.sendMessage(Utils.color("&2» &7End Entities: &a" + Utils.countEntitiesInWorlds(THE_END) + " &7Loaded Chunks: &a" + Utils.loadedChunksInWorlds(THE_END)));
-        sender.sendMessage(Utils.color("&2» &7Server File Size: &a" + Utils.formatData(folderFileSize(systemInfo.getServer().getWorldContainer()))));
+        // sender.sendMessage(Utils.color("&2» &7Server File Size: &a" + Utils.formatData(folderFileSize(systemInfo.getServer().getUpdateFolder()))));
     }
 
     /**
@@ -199,7 +167,6 @@ public final class CommandSystemInfo extends SystemInfoCommand {
     private void reload(@NotNull CommandSender sender) {
         Utils.cachedColor = null;
         Utils.cachedDarkColor = null;
-        systemInfo.getSystemInfoConfig().reloadValues();
         sender.sendMessage(Utils.color("&8» &aSuccessfully reloaded system values and config!"));
     }
 }

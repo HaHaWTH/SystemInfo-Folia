@@ -54,10 +54,9 @@ public final class CommandDevices extends SystemInfoCommand {
      * @param args   The command arguments (not used in this command).
      * @return True if the command was executed successfully; otherwise, false.
      */
-    @SuppressWarnings("NullableProblems")
     @Override
     public boolean execute(CommandSender sender, String name, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.devices")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 printDevices(sender);
                 return true;
@@ -80,13 +79,8 @@ public final class CommandDevices extends SystemInfoCommand {
         sender.sendMessage(Utils.color("&2» &7List:"));
         for (UsbDevice usb : systemInfo.getSystemValues().getUsbDevices()) {
             sender.sendMessage(Utils.color("&7- &a" + usb.getVendor() + " " + usb.getSerialNumber()));
-
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
-                player.spigot().sendMessage(Utils.builderHover(" &7Serial-ID &8[&a*&8]&r", usb.getSerialNumber()));
-            } else {
                 sender.sendMessage(Utils.color(String.format(" &7Serial-ID &8[&a%s&8]&r", usb.getSerialNumber())));
-            }
+
 
             usb.getConnectedDevices();
             for (final UsbDevice subUsb : usb.getConnectedDevices()) {

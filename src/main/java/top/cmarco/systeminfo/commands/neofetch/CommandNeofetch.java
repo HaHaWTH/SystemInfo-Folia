@@ -64,7 +64,7 @@ public final class CommandNeofetch extends SystemInfoCommand {
         strings.offerLast("&aGPU&f: " + values.getMainGPU().getVendor() + " " + values.getMainGPU().getName());
         strings.offerLast("&aMemory&f: " + values.getUsedMemory() + " / " + values.getMaxMemory());
         strings.offerLast("&aJava&f: " + javaMx.getVmVendor() + " " + javaMx.getVmVersion());
-        strings.offerLast("&aMinecraft Version&f: " + Bukkit.getBukkitVersion());
+        strings.offerLast("&aMinecraft Version&f: " + Bukkit.getServer().getGameVersion());
         strings.offerLast("&aServer Implementation&f: " + impl.name().toLowerCase());
         return strings.iterator();
     }
@@ -104,7 +104,7 @@ public final class CommandNeofetch extends SystemInfoCommand {
 
     @Override
     public boolean execute(CommandSender sender, String s, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.neofetch")) {
+        if (sender.isOp()) {
 
             if (sender instanceof HumanEntity) {
                 sender.sendMessage(Messages.CONSOLE_ONLY.value(true));

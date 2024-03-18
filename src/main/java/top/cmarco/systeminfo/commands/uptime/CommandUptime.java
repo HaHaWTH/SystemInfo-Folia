@@ -58,7 +58,7 @@ public final class CommandUptime extends SystemInfoCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String name, String[] args) {
         if (args.length == 0) {
-            if (sender.hasPermission("systeminfo.commands.uptime")) {
+            if (sender.isOp()) {
                 uptime(sender);
                 return true;
             } else {

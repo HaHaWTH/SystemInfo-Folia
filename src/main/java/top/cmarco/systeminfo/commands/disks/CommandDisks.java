@@ -19,7 +19,6 @@
 package top.cmarco.systeminfo.commands.disks;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HWPartition;
@@ -28,6 +27,7 @@ import top.cmarco.systeminfo.enums.Messages;
 import top.cmarco.systeminfo.plugin.SystemInfo;
 import top.cmarco.systeminfo.utils.Utils;
 import java.util.Collections;
+
 /**
  * The `CommandDisks` class is a Spigot command that allows players with the appropriate permission to retrieve a list
  * of system disks and their details using the "/disks" command.
@@ -56,7 +56,7 @@ public final class CommandDisks extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender sender, @NotNull String name, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.disks")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 try {
                     printDisks(sender);
@@ -80,19 +80,6 @@ public final class CommandDisks extends SystemInfoCommand {
      */
     private void printDisks(CommandSender sender) {
 
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            for (HWDiskStore disk : systemInfo.getSystemValues().getDiskStores()) {
-                player.spigot().sendMessage(Utils.builderHover("&7[" + disk.getName() + " " + disk.getModel(),
-                        "&7Serial: &a" + disk.getSerial()
-                                + "\n&7Disk Read: &a" + Utils.formatData(disk.getReadBytes())
-                                + "\n&7Disk Written: &a" + Utils.formatData(disk.getWriteBytes())));
-                for (HWPartition part : disk.getPartitions()) {
-                    player.spigot().sendMessage(Utils.builderHover("  &7|-- &a" + part.getIdentification() + " " + part.getType() + " &7Size: &a" + Utils.formatData(part.getSize()),
-                            "&7Mount Point: &a" + part.getMountPoint() + " &7Uuid: &a" + part.getUuid()));
-                }
-            }
-        } else {
             for (HWDiskStore disk : systemInfo.getSystemValues().getDiskStores()) {
                 final String diskStr = "&7[" + disk.getName() + " " + disk.getModel() +
                         "&7Serial: &a" + disk.getSerial()
@@ -108,6 +95,6 @@ public final class CommandDisks extends SystemInfoCommand {
                     sender.sendMessage(Utils.color(diskStr));
                 }
             }
-        }
+
     }
 }

@@ -57,7 +57,7 @@ public final class CommandLscpu extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender sender, String name, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.lscpu")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 printLscpu(sender);
                 return true;

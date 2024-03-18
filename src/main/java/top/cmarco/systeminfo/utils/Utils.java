@@ -24,15 +24,11 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandMap;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import top.cmarco.systeminfo.config.SystemInfoConfig;
 import top.cmarco.systeminfo.plugin.SystemInfo;
 
 public class Utils {
@@ -71,38 +67,7 @@ public class Utils {
      * @return returns the string with colors which can be displayed inside Minecraft chat/console
      */
     public static String color(String input) {
-        if (SystemInfo.INSTANCE == null) {
-            return ChatColor.translateAlternateColorCodes('&', input);
-        } else {
-            if (cachedColor == null) {
-                SystemInfo systemInfo = SystemInfo.INSTANCE;
-                SystemInfoConfig config = systemInfo.getSystemInfoConfig();
-                String colorName = config.getColorScheme();
-                ChatColor chatColor = null;
-
-                for (ChatColor color : ChatColor.values()) {
-                    if (color.name().equalsIgnoreCase(colorName) || color.name().replace("_", " ").equalsIgnoreCase(colorName)) {
-                        chatColor = color;
-                        break;
-                    }
-                }
-
-                if (chatColor == null) {
-                    return "§cFix your config.yml &e`color-scheme` &c!!!";
-                }
-
-                char currentChar = chatColor.getChar();
-
-                cachedColor = currentChar;
-                cachedDarkColor = LIGHT_DARK_CHARACTER_MAP.get(currentChar);
-
-            }
-
-            input = input.replace("&a", String.format("&%c", cachedColor));
-            input = input.replace("&2", String.format("&%c", cachedDarkColor));
-
-            return ChatColor.translateAlternateColorCodes('&', input);
-        }
+        return ChatColor.translateAlternateColorCodes('&', input);
     }
 
     public static String formatData(long bytes) {
@@ -149,34 +114,6 @@ public class Utils {
     }
 
     /**
-     * Creates a custom BaseComponent with a hover event using the following parameters.
-     *
-     * @param text      this is the text that will display in chat, color codes are allowed.
-     * @param hoverText this is the text that will be shown when the player hovers over a message, color codes allowed.
-     * @return returns the BaseComponent generated.
-     */
-    public static BaseComponent builderHover(String text, String hoverText) {
-        TextComponent textComponent = new TextComponent();
-        textComponent.setText(color(text));
-        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(color(hoverText)).create()));
-        return textComponent;
-    }
-
-    /**
-     * Creates a custom BaseComponent with a click event using the following parameters.
-     *
-     * @param text    this is the text that will display in chat, color codes are allowed.
-     * @param command this is the command which will be executed upon entering the message in chat.
-     * @return returns the BaseComponent generated.
-     */
-    public static BaseComponent builderClick(String text, String command) {
-        TextComponent textComponent = new TextComponent();
-        textComponent.setText(color(text));
-        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-        return textComponent;
-    }
-
-    /**
      * This method counts the entities in every world with a given environment
      * if more worlds are found, multiple values will be returned in the same string
      * separated by a blank space.
@@ -214,23 +151,4 @@ public class Utils {
         return loadedChunksInWorlds.toString();
     }
 
-    private static CommandMap commandMap;
-
-    /**
-     * These methods allow to use the CommandMap on different forks
-     * @author electronicboy , thanks!
-     *
-     * @return the CommandMap
-     * @throws NoSuchFieldException if field isn't found
-     * @throws IllegalAccessException if access is invalid
-     */
-    public static CommandMap getCommandMap() throws NoSuchFieldException, IllegalAccessException {
-        if (commandMap == null) {
-            Class<? extends Server> serverClass = Bukkit.getServer().getClass();
-            Field commandMapField = serverClass.getDeclaredField("commandMap");
-            commandMapField.setAccessible(true);
-            commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
-        }
-        return commandMap;
-    }
 }

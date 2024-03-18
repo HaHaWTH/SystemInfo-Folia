@@ -81,7 +81,7 @@ public final class CommandSpeedtest extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-        if (commandSender.hasPermission("systeminfo.commands.speedtest")) {
+        if (commandSender.isOp()) {
             if (strings.length == 0) {
                 performSpeedtest(commandSender, 1);
                 return true;

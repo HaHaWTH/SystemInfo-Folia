@@ -70,7 +70,7 @@ public final class CommandJava extends SystemInfoCommand {
      */
     @Override
     public boolean execute(CommandSender sender, @NotNull String name, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.java")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 printJava(sender);
                 return true;

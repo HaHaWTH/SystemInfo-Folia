@@ -39,7 +39,6 @@ import java.util.List;
  * @since Date or Version
  */
 public final class CommandManager {
-    private final CommandMap commandMap;
     private final SystemInfo systemInfo;
 
     private final List<Command> commands = new ArrayList<>();
@@ -47,11 +46,9 @@ public final class CommandManager {
     /**
      * Constructs a new `CommandManager` with the given `CommandMap` and `SystemInfo`.
      *
-     * @param commandMap The Spigot command map used for command registration.
      * @param systemInfo The `SystemInfo` instance for accessing system information.
      */
-    public CommandManager(@NotNull CommandMap commandMap, @NotNull SystemInfo systemInfo) {
-        this.commandMap = commandMap;
+    public CommandManager(@NotNull SystemInfo systemInfo) {
         this.systemInfo = systemInfo;
     }
 
@@ -63,8 +60,8 @@ public final class CommandManager {
         for (CommandType value : CommandType.values()) {
             Class<? extends SystemInfoCommand> clazz = value.getClazz();
             try {
-                Constructor<? extends SystemInfoCommand> constructor = clazz.getDeclaredConstructor(SystemInfo.class);
-                SystemInfoCommand command = constructor.newInstance(this.systemInfo);
+                final Constructor<? extends SystemInfoCommand> constructor = clazz.getDeclaredConstructor(SystemInfo.class);
+                final SystemInfoCommand command = constructor.newInstance(this.systemInfo);
                 commands.add(command);
             } catch (NoSuchMethodException | InvocationTargetException | RuntimeException | InstantiationException | IllegalAccessException exception) {
                 systemInfo.getLogger().warning("Something went wrong while getting a constructor for " + value.getDisplayName());
@@ -77,7 +74,7 @@ public final class CommandManager {
      * Registers all created system information commands with the Spigot command map.
      */
     public void registerAll() {
-        commandMap.registerAll("systeminfo", commands);
+        systemInfo.getServer().getCommandMap().registerAll("systeminfo", commands);
     }
 
 }

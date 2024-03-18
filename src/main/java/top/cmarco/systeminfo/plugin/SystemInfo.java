@@ -26,15 +26,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import top.cmarco.systeminfo.api.SystemInfoPlaceholderExtension;
 import top.cmarco.systeminfo.commands.register.CommandManager;
-import top.cmarco.systeminfo.config.SystemInfoConfig;
-import top.cmarco.systeminfo.gui.GuiClickListener;
-import top.cmarco.systeminfo.gui.SystemInfoGui;
-import top.cmarco.systeminfo.libraries.LibraryManager;
 import top.cmarco.systeminfo.oshi.SystemValues;
 import top.cmarco.systeminfo.utils.Utils;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * The main class of the SystemInfo Spigot plugin, responsible for initializing and managing the plugin's features.
@@ -48,9 +44,12 @@ public final class SystemInfo extends JavaPlugin {
     private CommandManager commandManager; // The custom CommandManager for handling plugin commands.
     private SystemInfoPlaceholderExtension systemInfoExtension; // PlaceholderAPI extension for custom placeholders.
     private SystemValues systemValues; // Manager for system information values.
-    private SystemInfoGui systemInfoGui; // Graphical User Interface for the plugin.
-    private LibraryManager libraryManager; // Download and load dependencies.
-    private SystemInfoConfig systemInfoConfig;
+
+    @Override
+    public void onDisable() {
+        // empty implementation.
+        // necessary for beta-1.7.3 JavaPlugin
+    }
 
     /**
      * Called when the plugin is enabled. It initializes various components and registers listeners.
@@ -58,54 +57,28 @@ public final class SystemInfo extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
-        setupConfig();
-        loadDependencies();
         loadValues();
         loadCommands();
-        loadGui();
         loadAPI();
-        registerListener();
-        setupConfig();
         setupMetrics();
     }
 
     private void setupMetrics() {
-        Metrics metrics = new Metrics(this, 5610);
+        final Metrics metrics = new Metrics(this, 5610);
     }
 
-    private void setupConfig() {
-        this.systemInfoConfig = new SystemInfoConfig(this);
+    public Logger getLogger() {
+        return Bukkit.getLogger();
     }
 
     /**
      * Checks if the bukkit version contains OSHI.
+     *
      * @param plugin The Plugin.
      * @return True if at least Bukkit 1.17.
      */
     private static boolean checkVersion(@NotNull Plugin plugin) {
-        final String[] hasVersionOshi = {"1.17", "1.18", "1.19", "1.20", "1.21"};
-        final String currentVer = plugin.getServer().getBukkitVersion();
-        return Arrays.stream(hasVersionOshi).noneMatch(currentVer::contains);
-    }
-
-    /**
-     * Loads the dependencies necessary for this plugin at runtime.
-     * Loads: oshi-core and jspeedtest.
-     */
-    private void loadDependencies() {
-        this.libraryManager = new LibraryManager(this);
-        this.libraryManager.loadSpeedtestLibraries();
-
-        if (checkVersion(this)) {
-            this.libraryManager.loadOshiLibraries();
-        }
-    }
-
-    /**
-     * Initializes and loads the SystemInfoGui.
-     */
-    private void loadGui() {
-        this.systemInfoGui = new SystemInfoGui(this);
+        return true;
     }
 
     /**
@@ -135,22 +108,9 @@ public final class SystemInfo extends JavaPlugin {
      * If there's an issue with accessing the command map, the plugin will be disabled.
      */
     private void loadCommands() {
-        try {
-            commandManager = new CommandManager(Utils.getCommandMap(), this);
-            commandManager.createInstances();
-            commandManager.registerAll();
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            this.getLogger().warning("Could not get command map for SystemInfo!");
-            this.getLogger().warning("Disabling plugin . . .");
-            pluginManager.disablePlugin(this);
-        }
-    }
-
-    /**
-     * Registers the GuiClickListener as a listener to handle GUI interactions.
-     */
-    private void registerListener() {
-        pluginManager.registerEvents(new GuiClickListener(), this);
+        commandManager = new CommandManager(this);
+        commandManager.createInstances();
+        commandManager.registerAll();
     }
 
     // Getters for class members
@@ -193,21 +153,5 @@ public final class SystemInfo extends JavaPlugin {
     @NotNull
     public SystemValues getSystemValues() {
         return systemValues;
-    }
-
-    /**
-     * @return Gets the system info gui class.
-     */
-    @NotNull
-    public SystemInfoGui getSystemInfoGui() {
-        return systemInfoGui;
-    }
-
-    /**
-     * @return Gets the mail config used by system info.
-     */
-    @NotNull
-    public SystemInfoConfig getSystemInfoConfig() {
-        return systemInfoConfig;
     }
 }

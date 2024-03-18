@@ -67,7 +67,7 @@ public class CommandGpu extends SystemInfoCommand {
 
     @Override
     public boolean execute(CommandSender sender, String s, String[] args) {
-        if (sender.hasPermission("systeminfo.commands.gpu")) {
+        if (sender.isOp()) {
             if (args.length == 0) {
                 printGPUs(sender);
                 return true;
