@@ -447,8 +447,8 @@ public final class SystemValues {
             return;
         }
 
-        SystemInfo.INSTANCE.getServer().getScheduler()
-                .runTaskTimerAsynchronously(SystemInfo.INSTANCE, () -> {
+        SystemInfo.getScheduler()
+                .runTaskTimerAsynchronously(() -> {
                     if (previousTicks != null) {
                         lastCpuLoad = SystemInfo.INSTANCE.getSystemValues().getSystemCpuLoadBetweenTicks(previousTicks) * 100;
                     }

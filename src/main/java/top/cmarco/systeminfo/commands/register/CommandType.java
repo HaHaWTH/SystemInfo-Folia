@@ -19,7 +19,7 @@
 package top.cmarco.systeminfo.commands.register;
 
 import org.jetbrains.annotations.NotNull;
-import top.cmarco.systeminfo.commands.*;
+import top.cmarco.systeminfo.commands.SystemInfoCommand;
 import top.cmarco.systeminfo.commands.cpuload.CommandCpuLoad;
 import top.cmarco.systeminfo.commands.devices.CommandDevices;
 import top.cmarco.systeminfo.commands.disks.CommandDisks;
@@ -28,6 +28,7 @@ import top.cmarco.systeminfo.commands.htop.CommandHtop;
 import top.cmarco.systeminfo.commands.java.CommandJava;
 import top.cmarco.systeminfo.commands.lscpu.CommandLscpu;
 import top.cmarco.systeminfo.commands.neofetch.CommandNeofetch;
+import top.cmarco.systeminfo.commands.network.CommandNetwork;
 import top.cmarco.systeminfo.commands.sensors.CommandSensors;
 import top.cmarco.systeminfo.commands.speedtest.CommandSpeedtest;
 import top.cmarco.systeminfo.commands.systeminfo.CommandSystemInfo;
@@ -48,6 +49,7 @@ public enum CommandType {
     DEVICES("Devices", CommandDevices.class),
     DISKS("Disks", CommandDisks.class),
     HTOP("Htop", CommandHtop.class),
+    NETWORK("Network", CommandNetwork.class),
     LSCPU("LsCPU", CommandLscpu.class),
     SENSORS("Sensors", CommandSensors.class),
     SPEEDTEST("Speedtest", CommandSpeedtest.class),

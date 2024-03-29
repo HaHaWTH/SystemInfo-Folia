@@ -18,17 +18,20 @@
 
 package top.cmarco.systeminfo.commands.cpuload;
 
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import oshi.util.Util;
+import top.cmarco.systeminfo.commands.SystemInfoCommand;
+import top.cmarco.systeminfo.enums.Messages;
+import top.cmarco.systeminfo.plugin.SystemInfo;
+import top.cmarco.systeminfo.utils.Utils;
+
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
-import org.jetbrains.annotations.NotNull;
-import top.cmarco.systeminfo.commands.SystemInfoCommand;
-import top.cmarco.systeminfo.plugin.SystemInfo;
-import top.cmarco.systeminfo.enums.Messages;
-import top.cmarco.systeminfo.utils.Utils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitScheduler;
-import oshi.util.Util;
+import static top.cmarco.systeminfo.plugin.SystemInfo.getScheduler;
+
 /**
  * The `CommandCpuLoad` class is a Spigot command that allows players with the appropriate permission to retrieve
  * information about the CPU load using the "/cpuload" command.
@@ -82,13 +85,13 @@ public final class CommandCpuLoad extends SystemInfoCommand {
     @NotNull
     private CompletableFuture<Double> getCpuLoad() {
         final CompletableFuture<Double> future = new CompletableFuture<>();
-        final BukkitScheduler scheduler = systemInfo.getServer().getScheduler();
+        final TaskScheduler scheduler = getScheduler();
 
-        scheduler.runTaskAsynchronously(systemInfo, () -> {
+        scheduler.runTaskAsynchronously(() -> {
             previousTicks = systemInfo.getSystemValues().getSystemCpuLoadTicks();
             previousMultiTicks = systemInfo.getSystemValues().getProcessorCpuLoadTicks();
             Util.sleep(1000);
-            scheduler.runTask(systemInfo, () -> future.complete(systemInfo.getSystemValues().getSystemCpuLoadBetweenTicks(previousTicks) * 100));
+            scheduler.runTask(() -> future.complete(systemInfo.getSystemValues().getSystemCpuLoadBetweenTicks(previousTicks) * 100));
         });
 
         return future;
@@ -102,15 +105,15 @@ public final class CommandCpuLoad extends SystemInfoCommand {
     @NotNull
     private CompletableFuture<String> getAverageLoads() {
         final CompletableFuture<String> future = new CompletableFuture<>();
-        final BukkitScheduler scheduler = systemInfo.getServer().getScheduler();
+        final TaskScheduler scheduler = getScheduler();
 
-        scheduler.runTaskAsynchronously(systemInfo, () -> {
+        scheduler.runTaskAsynchronously(() -> {
             StringBuilder cpuLoads = new StringBuilder("&7Load per core:&a");
             double[] load = systemInfo.getSystemValues().getProcessorCpuLoadBetweenTicks(previousMultiTicks);
             for (final double average : load) {
                 cpuLoads.append(String.format(" %.1f%%", average * 100));
             }
-            scheduler.runTask(systemInfo, () -> future.complete(cpuLoads.toString()));
+            scheduler.runTask(() -> future.complete(cpuLoads.toString()));
         });
 
         return future;

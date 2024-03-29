@@ -38,7 +38,7 @@ public final class LibraryManager {
     public LibraryManager(@NotNull SystemInfo plugin) {
         this.plugin = plugin;
         this.libraryManager = new BukkitLibraryManager(plugin);
-        this.libraryManager.addMavenCentral();
+        this.libraryManager.addRepository("https://maven.aliyun.com/repository/public/");
     }
 
     /**

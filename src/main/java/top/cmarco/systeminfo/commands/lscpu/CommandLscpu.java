@@ -18,13 +18,13 @@
 
 package top.cmarco.systeminfo.commands.lscpu;
 
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import top.cmarco.systeminfo.commands.SystemInfoCommand;
 import top.cmarco.systeminfo.enums.Messages;
 import top.cmarco.systeminfo.oshi.SystemValues;
 import top.cmarco.systeminfo.plugin.SystemInfo;
 import top.cmarco.systeminfo.utils.Utils;
-import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
 

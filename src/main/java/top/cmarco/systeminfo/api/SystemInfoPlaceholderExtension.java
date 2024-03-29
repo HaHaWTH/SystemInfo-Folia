@@ -19,11 +19,10 @@
 package top.cmarco.systeminfo.api;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.jetbrains.annotations.NotNull;
-
-import top.cmarco.systeminfo.plugin.SystemInfo;
-import top.cmarco.systeminfo.oshi.SystemValues;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
+import top.cmarco.systeminfo.oshi.SystemValues;
+import top.cmarco.systeminfo.plugin.SystemInfo;
 import top.cmarco.systeminfo.protocol.BukkitNetworkingManager;
 import top.cmarco.systeminfo.utils.Utils;
 

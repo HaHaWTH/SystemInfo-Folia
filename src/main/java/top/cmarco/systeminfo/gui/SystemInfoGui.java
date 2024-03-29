@@ -18,22 +18,22 @@
 
 package top.cmarco.systeminfo.gui;
 
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import com.google.common.collect.ImmutableList;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import top.cmarco.systeminfo.oshi.SystemValues;
 import top.cmarco.systeminfo.plugin.SystemInfo;
 import top.cmarco.systeminfo.protocol.BukkitNetworkingManager;
 import top.cmarco.systeminfo.protocol.NetworkStatsData;
 import top.cmarco.systeminfo.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,7 +51,7 @@ public final class SystemInfoGui {
     }
 
     private final SystemInfo systemInfo;
-    private final Map<UUID, BukkitTask> tasks = new HashMap<>();
+    private final Map<UUID, MyScheduledTask> tasks = new HashMap<>();
 
     /* ---------------------------- */
     private static final List<Integer> BACKGROUND_SLOTS = ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 27, 26, 25, 24, 23, 22, 21, 20, 19, 10);
@@ -60,7 +60,7 @@ public final class SystemInfoGui {
 
     /* ---------------------------- */
 
-    private BukkitTask fillTask = null;
+    private MyScheduledTask fillTask = null;
 
     /* ---------------------------- */
 
@@ -75,7 +75,7 @@ public final class SystemInfoGui {
         player.openInventory(GUI);
 
 
-        final BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimer(systemInfo, () -> {
+        final MyScheduledTask bukkitTask = SystemInfo.getScheduler().runTaskTimer(player, () -> {
 
             final InventoryView inventoryView = player.getOpenInventory();
 
@@ -84,7 +84,7 @@ public final class SystemInfoGui {
                 this.updateInventory();
 
             } else {
-                BukkitTask bt = this.tasks.get(player.getUniqueId());
+                MyScheduledTask bt = this.tasks.get(player.getUniqueId());
 
                 if (bt != null) {
                     bt.cancel();
@@ -104,11 +104,11 @@ public final class SystemInfoGui {
     private void fillBackground() {
         final Iterator<Integer> invSlotIterator = SystemInfoGui.BACKGROUND_SLOTS.iterator();
 
-        this.fillTask = Bukkit.getScheduler().runTaskTimer(systemInfo, () -> {
+        this.fillTask = SystemInfo.getScheduler().runTaskTimer( () -> {
 
             if (invSlotIterator.hasNext()) {
 
-                setCustomItem(SystemInfoGui.GUI, Material.STAINED_GLASS_PANE, invSlotIterator.next(), " ", " ");
+                setCustomItem(SystemInfoGui.GUI, Material.GLASS_PANE, invSlotIterator.next(), " ", " ");
 
             } else {
 
@@ -161,28 +161,28 @@ public final class SystemInfoGui {
      */
     public void updateInventory() {
         SystemValues values = this.systemInfo.getSystemValues();
-        setCustomItem(GUI, Material.GREEN_RECORD, 11, "&2Processor",
+        setCustomItem(GUI, Material.GREEN_WOOL, 11, "&2Processor",
                 "&7Vendor: &a" + values.getCpuVendor(),
                 "&7Model: &a" + values.getCpuModel() + " " + values.getCpuModelName(),
                 "&7Clock Speed: &a" + values.getCpuMaxFrequency() + " GHz",
                 "&7Physical Cores: &a" + values.getCpuCores(),
                 "&7Logical Cores: &a" + values.getCpuThreads());
 
-        setCustomItem(GUI, Material.RECORD_10, 12, "&2CPU Load",
+        setCustomItem(GUI, Material.REDSTONE_LAMP, 12, "&2CPU Load",
                 "&7Global Load: &a" + String.format("%.2f", values.getLastCpuLoad()) + "%");
 
-        setCustomItem(GUI, Material.RECORD_4, 13, "&2Memory",
+        setCustomItem(GUI, Material.IRON_BLOCK, 13, "&2Memory",
                 "&7Total: &a" + values.getMaxMemory(),
                 "&7Available: &a" + values.getAvailableMemory(),
                 "&7Swap Used: &a" + values.getUsedSwap(),
                 "&7Swap Allocated: &a" + values.getTotalSwap());
 
-        setCustomItem(GUI, Material.RECORD_6, 14, "&2GPU",
+        setCustomItem(GUI, Material.GOLD_INGOT, 14, "&2GPU",
                 "&7GPU Model: &a" + values.getMainGPU().getName(),
                 "&7GPU Vendor: &a" + values.getMainGPU().getVendor(),
                 "&7GPU VRAM: &a" + Utils.formatData(values.getMainGPU().getVRam()));
 
-        setCustomItem(GUI, Material.GOLD_RECORD, 15, "&2Operating system",
+        setCustomItem(GUI, Material.PAPER, 15, "&2Operating system",
                 "&7Name: &a" + values.getOSFamily() + " " + values.getOSManufacturer(),
                 "&7Version: &a" + values.getOSVersion(),
                 "&7Active Processes: &a" + values.getRunningProcesses());
@@ -193,7 +193,7 @@ public final class SystemInfoGui {
 
             final NetworkStatsData networkStatsData = networkingManager.getNetworkStats();
 
-            setCustomItem(GUI, Material.RECORD_3, 16, "&2Networking",
+            setCustomItem(GUI, Material.STRING, 16, "&2Networking",
                     "&7Name: &a" + values.getNetworkInterfaceName(),
                     "&7Packets Out: &a" + networkStatsData.getLastSentPackets() + "/s",
                     "&7Packets In: &a" + networkStatsData.getLastReceivedPackets() + "/s",
@@ -205,17 +205,9 @@ public final class SystemInfoGui {
                     "&7Data In: &a" + Utils.formatData(networkStatsData.getLastReceivedBytes()) + "/s"
             );
 
-        } else {
-
-            setCustomItem(GUI, Material.RECORD_3, 16, "&cNetworking",
-                    "&c! Missing PacketEvents-API !",
-                    "&7In order to use this networking feature",
-                    "&7you are required to install the correct",
-                    "&7version of PacketEvents in your server.");
-
         }
 
-        setCustomItem(GUI, Material.RECORD_9, 17, "&2Uptime",
+        setCustomItem(GUI, Material.BEACON, 17, "&2Uptime",
                 "&7Jvm uptime: &a" + ChronoUnit.MINUTES.between(systemInfo.getStartupTime(), LocalDateTime.now()) + " min.",
                 "&7Current time: &a" + LocalDateTime.now().format(TIME_FORMATTER));
 

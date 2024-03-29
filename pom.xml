@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -41,19 +41,33 @@
                         </goals>
                         <configuration>
                             <relocations>
-
                                 <relocation>
                                     <pattern>com.alessiodp.libby</pattern>
                                     <shadedPattern>top.cmarco.systeminfo.libs.com.alessiodp.libby</shadedPattern>
                                 </relocation>
-
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>top.cmarco.systeminfo.libs.org.bstats</shadedPattern>
                                 </relocation>
-
+                                <relocation>
+                                    <pattern>com.github.retrooper.packetevents</pattern>
+                                    <shadedPattern>top.cmacro.systeminfo.libs.packetevents.impl</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.github.retrooper.packetevents</pattern>
+                                    <shadedPattern>top.cmacro.systeminfo.libs.packetevents.api</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>top.cmacro.systeminfo.libs.packetevents.kyori</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.github.Anon8281.universalScheduler</pattern>
+                                    <shadedPattern>top.cmacro.systeminfo.libs.universalScheduler</shadedPattern>
+                                </relocation>
                             </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
                         </configuration>
                     </execution>
                 </executions>
@@ -69,17 +83,19 @@
 
     <repositories>
         <repository>
-            <id>maven-snapshots</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>aliyun</id>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <!-- Libby (AlessioDP) Repository -->
         <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
+            <id>AlessioDP</id>
+            <url>https://repo.alessiodp.com/snapshots/</url>
         </repository>
+
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
@@ -88,10 +104,19 @@
             <id>codemc-releases</id>
             <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
-
+        <repository>
+            <id>wdsj</id>
+            <url>https://repo.wdsj.io/repository/minecraft/</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.Anon8281</groupId>
+            <artifactId>UniversalScheduler</artifactId>
+            <version>0.1.6</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>com.alessiodp.libby</groupId>
             <artifactId>libby-bukkit</artifactId>
@@ -123,7 +148,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -145,7 +170,7 @@
             <groupId>com.github.retrooper.packetevents</groupId>
             <artifactId>spigot</artifactId>
             <version>2.2.1</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->

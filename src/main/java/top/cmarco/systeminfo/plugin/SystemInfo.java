@@ -18,6 +18,8 @@
 
 package top.cmarco.systeminfo.plugin;
 
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bstats.bukkit.Metrics;
@@ -55,8 +57,11 @@ public final class SystemInfo extends JavaPlugin {
     private SystemInfoGui systemInfoGui; // Graphical User Interface for the plugin.
     private LibraryManager libraryManager; // Download and load dependencies.
     private SystemInfoConfig systemInfoConfig; // YAML configuration manager.
-    private BukkitNetworkingManager networkingManager;
-
+    public static BukkitNetworkingManager networkingManager;
+    private static TaskScheduler taskScheduler;
+    public static TaskScheduler getScheduler() {
+        return taskScheduler;
+    }
     /**
      * Checks if the bukkit version contains OSHI.
      *
@@ -75,6 +80,7 @@ public final class SystemInfo extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
+        taskScheduler = UniversalScheduler.getScheduler(this);
         setupConfig();
         loadDependencies();
         setupPacketEvents();
@@ -89,16 +95,11 @@ public final class SystemInfo extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        final boolean hasPacketEvents = Bukkit.getPluginManager().getPlugin("packetevents") != null;
-        if (!hasPacketEvents) {
-            return;
-        }
-
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
         PacketEvents.getAPI().getSettings()
                 .reEncodeByDefault(true)
-                .checkForUpdates(true)
-                .bStats(true);
+                .checkForUpdates(false)
+                .bStats(false);
         PacketEvents.getAPI().load();
     }
 
@@ -117,16 +118,8 @@ public final class SystemInfo extends JavaPlugin {
      * The method will do nothing is the soft-dependency is absent.
      */
     private void setupPacketEvents() {
-        final boolean hasPacketEvents = Bukkit.getPluginManager().getPlugin("packetevents") != null;
-
-        if (!hasPacketEvents) {
-            getLogger().warning("Did not found [packetevents] will not enable networking managing features.");
-            getLogger().info("Please, install the necessary version of packetevents to enable more features!");
-            return;
-        }
-
-        this.networkingManager = new BukkitNetworkingManager(this);
-        this.networkingManager.loadPacketListeners();
+        networkingManager = new BukkitNetworkingManager(this);
+        networkingManager.loadPacketListeners();
     }
 
     private void setupMetrics() {

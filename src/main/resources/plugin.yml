@@ -2,6 +2,8 @@ name: "SystemInfo"
 version: ${project.version}
 main: "top.cmarco.systeminfo.plugin.SystemInfo"
 authors: ["CMarco"]
-folia-supported: false
-softdepend: ["packetevents", "ProtocolLib"]
+api-version: 1.13
+folia-supported: true
+softdepend:
+  - ProtocolLib
 description: "SystemInfo - The Master of Server Hardware."
